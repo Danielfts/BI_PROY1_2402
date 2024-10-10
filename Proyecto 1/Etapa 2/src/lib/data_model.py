@@ -11,9 +11,13 @@ class ModelPredictionOutUnit(BaseModel):
 class ModelPredictionOut(BaseModel):
     predictions: List[ModelPredictionOutUnit]
 
-class ModelTrainUnit(BaseModel):
-    Textos_espanol: str
-    sdg: int
-
 class ModelTrainIn(BaseModel):
-    data: List[ModelTrainUnit]
+    Textos_espanol: List[str]
+    sdg: List[int]
+
+class ModelTrainOut(BaseModel):
+    accuracy: float
+    f1_score: float
+    precision: float
+    recall: float
+    message: str
