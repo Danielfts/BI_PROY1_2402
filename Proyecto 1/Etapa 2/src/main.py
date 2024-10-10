@@ -9,7 +9,6 @@ model = Model()
 def ping():
     return {'message': 'Analytics service is running'}
 
-
 @app.post('/predict', response_model=ModelPredictionOut)
 def predict(body: ModelPredictionIn):
     predictions = model.predict(body.Textos_espanol)
@@ -18,6 +17,10 @@ def predict(body: ModelPredictionIn):
 @app.post('/train')
 def train(data: ModelTrainIn):
     return model.train(data.Textos_espanol, data.sdg)
+
+@app.get('/version')
+def version():
+    return {'version': model.model_version}
 
 @app.post('/rollback')
 def rollback():
