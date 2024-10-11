@@ -1,14 +1,25 @@
 import React, { useState } from 'react';
-import { Container, Row, Col, Form, Button, Card } from 'react-bootstrap';
+import { Container, Row, Col, Form, Button, Card, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom'; 
 
 const Unico = () => {
+  const [inputText, setInputText] = useState(''); // Estado para el texto del input
   const [prediction, setPrediction] = useState(null);
+  const [error, setError] = useState(''); // Estado para manejar el error
   const navigate = useNavigate();
 
   const handlePredict = () => {
+    if (inputText.trim() === '') {
+      setError('Por favor, ingrese un texto antes de predecir.');
+      return;
+    }
+    setError(''); // Limpiar el error si hay texto
     // Simulación de la predicción
     setPrediction(2);
+  };
+
+  const handleInputChange = (event) => {
+    setInputText(event.target.value);
   };
 
   const goToMultiple = () => {
@@ -51,6 +62,8 @@ const Unico = () => {
           <Form.Control 
             type="text" 
             placeholder="Inserta tu texto" 
+            value={inputText} // Enlazar el estado al input
+            onChange={handleInputChange} // Manejar el cambio en el input
             className="mb-3" 
             style={{ borderRadius: '20px', border: '1px solid #ddd', padding: '10px', width: '100%' }}
           />
@@ -63,6 +76,15 @@ const Unico = () => {
           </Button>
         </Col>
       </Row>
+      {error && (
+        <Row>
+          <Col md={12}>
+            <Alert variant="danger" style={{ borderRadius: '20px' }}>
+              {error}
+            </Alert>
+          </Col>
+        </Row>
+      )}
       {prediction !== null && (
         <Row className="mt-4">
           <Col md={12}>
@@ -85,4 +107,3 @@ const Unico = () => {
 };
 
 export default Unico;
-

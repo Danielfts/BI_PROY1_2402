@@ -1,12 +1,20 @@
 import React, { useState } from 'react';
-import { Container, Row, Col, Form, Button, Card, Table } from 'react-bootstrap';
+import { Container, Row, Col, Form, Button, Card, Table, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 
 const Entrenar = () => {
   const [metrics, setMetrics] = useState(null);
+  const [file, setFile] = useState(null); // Estado para almacenar el archivo CSV
+  const [error, setError] = useState(''); // Estado para manejar el error
   const navigate = useNavigate();
 
   const handleTrain = () => {
+    if (!file) {
+      setError('Por favor, sube un archivo CSV antes de entrenar.');
+      return;
+    }
+    setError(''); // Limpiar el error si hay un archivo
+
     // Simulación de métricas de entrenamiento
     const simulatedMetrics = {
       f1Score: 90,
@@ -15,6 +23,13 @@ const Entrenar = () => {
       accuracy: 90,
     };
     setMetrics(simulatedMetrics);
+  };
+
+  const handleFileChange = (event) => {
+    const selectedFile = event.target.files[0];
+    if (selectedFile) {
+      setFile(selectedFile);
+    }
   };
 
   const goToUnico = () => {
@@ -43,8 +58,9 @@ const Entrenar = () => {
       <Row>
         <Col md={12} className="d-flex">
           <Form.Control 
-            type="text" 
-            placeholder="Inserta tu set de datos" 
+            type="file" 
+            accept=".csv" 
+            onChange={handleFileChange}
             className="mb-3" 
             style={{ borderRadius: '20px', border: '1px solid #ddd', padding: '10px', width: '100%' }}
           />
@@ -57,6 +73,15 @@ const Entrenar = () => {
           </Button>
         </Col>
       </Row>
+      {error && (
+        <Row>
+          <Col md={12}>
+            <Alert variant="danger" style={{ borderRadius: '20px' }}>
+              {error}
+            </Alert>
+          </Col>
+        </Row>
+      )}
       {metrics && (
         <Row className="mt-4">
           <Col md={12}>
@@ -106,3 +131,4 @@ const Entrenar = () => {
 };
 
 export default Entrenar;
+

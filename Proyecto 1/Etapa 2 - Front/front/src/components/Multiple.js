@@ -1,13 +1,21 @@
 import React, { useState } from 'react';
-import { Container, Row, Col, Form, Button, Card, Table } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom'; // Importa useNavigate
+import { Container, Row, Col, Form, Button, Card, Table, Alert } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 
 const Multiple = () => {
   const [predictions, setPredictions] = useState([]);
-  const navigate = useNavigate(); // Hook de navegación
+  const [file, setFile] = useState(null); // Estado para almacenar el archivo CSV
+  const [error, setError] = useState(''); // Estado para manejar el error
+  const navigate = useNavigate();
 
   const handlePredict = () => {
-    // Simulación de predicciones para varios textos
+    if (!file) {
+      setError('Por favor, sube un archivo CSV antes de predecir.');
+      return;
+    }
+    setError(''); // Limpiar el error si hay un archivo
+
+    // Simulación de predicciones para varios textos (aquí procesarías el CSV)
     const simulatedPredictions = [
       { text: 'Texto No. 1', value: 3 },
       { text: 'Texto No. 2', value: 4 },
@@ -18,12 +26,19 @@ const Multiple = () => {
     setPredictions(simulatedPredictions);
   };
 
+  const handleFileChange = (event) => {
+    const selectedFile = event.target.files[0];
+    if (selectedFile) {
+      setFile(selectedFile);
+    }
+  };
+
   const goToUnico = () => {
-    navigate('/unico'); // Navega a la ruta '/unico'
+    navigate('/unico');
   };
 
   const goToEntrenar = () => {
-    navigate('/entrenar'); // Navega a la ruta '/entrenar'
+    navigate('/entrenar');
   };
 
   return (
@@ -33,7 +48,7 @@ const Multiple = () => {
           <Button 
             variant="link" 
             style={{ color: '#666', textDecoration: 'none' }} 
-            onClick={goToUnico} // Navega a "Único" al hacer clic
+            onClick={goToUnico}
           >
             Único
           </Button>
@@ -47,7 +62,7 @@ const Multiple = () => {
           <Button 
             variant="link" 
             style={{ color: '#666', textDecoration: 'none', marginLeft: '20px' }}
-            onClick={goToEntrenar} // Navega a "Entrenar" al hacer clic
+            onClick={goToEntrenar}
           >
             Entrenar
           </Button>
@@ -56,8 +71,9 @@ const Multiple = () => {
       <Row>
         <Col md={12} className="d-flex">
           <Form.Control 
-            type="text" 
-            placeholder="Inserta tu set de datos" 
+            type="file" 
+            accept=".csv" 
+            onChange={handleFileChange}
             className="mb-3" 
             style={{ borderRadius: '20px', border: '1px solid #ddd', padding: '10px', width: '100%' }}
           />
@@ -70,6 +86,15 @@ const Multiple = () => {
           </Button>
         </Col>
       </Row>
+      {error && (
+        <Row>
+          <Col md={12}>
+            <Alert variant="danger" style={{ borderRadius: '20px' }}>
+              {error}
+            </Alert>
+          </Col>
+        </Row>
+      )}
       {predictions.length > 0 && (
         <Row className="mt-4">
           <Col md={12}>
