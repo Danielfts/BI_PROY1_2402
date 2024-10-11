@@ -1,0 +1,659 @@
+{
+	"info": {
+		"_postman_id": "3b2ea4af-e82a-482e-a86d-fad244ecefbb",
+		"name": "System Tests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "38911504",
+		"_collection_link": "https://bi-g17-669528.postman.co/workspace/Team-Workspace~dff8f2ea-e615-43fd-8aa0-4d9317e97cc9/collection/38911504-3b2ea4af-e82a-482e-a86d-fad244ecefbb?action=share&source=collection_link&creator=38911504"
+	},
+	"item": [
+		{
+			"name": "Reset Models",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 204\", function () {",
+							"    pm.expect(pm.response.code).to.equal(204);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://{{baseUrl}}/reset",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"reset"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Version must be v1.0",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Test to check if the response time is less than 200ms",
+							"pm.test(\"Response status code is 200\", function () {",
+							"  pm.expect(pm.response.code).to.equal(200);",
+							"});",
+							"",
+							"pm.test(\"Response body contains the version number\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData.version).to.exist.and.to.equal('v1.0');",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{baseUrl}}/version",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"version"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Predict - Wrong body",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 422\", function () {",
+							"  pm.response.to.have.status(422);",
+							"});",
+							"",
+							"pm.test(\"Content-Type header is application/json\", function () {",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[\n    \"Text 1\",\n    \"Text 2\"\n]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{baseUrl}}/predict",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"predict"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Predict - Multiple texts",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"  pm.response.to.have.status(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Content-Type header is application/json\", function () {",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+							"});",
+							"",
+							"",
+							"pm.test(\"Predictions array is present and contains expected number of elements\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData.predictions).to.be.an('array');",
+							"    pm.expect(responseData.predictions.length).to.equal(3);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Each 'predictions' object has the required fields - sdg and prob\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData.predictions).to.be.an('array');",
+							"    responseData.predictions.forEach(prediction => {",
+							"        pm.expect(prediction.sdg).to.exist;",
+							"        pm.expect(prediction.prob).to.exist;",
+							"    });",
+							"});",
+							"",
+							"",
+							"pm.test(\"Predictions sdg and prob are within expected range\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData.predictions).to.be.an('array').that.is.not.empty;",
+							"    ",
+							"    responseData.predictions.forEach(function(prediction) {",
+							"        pm.expect(prediction.sdg).to.be.within(3, 5);",
+							"        pm.expect(prediction.prob).to.be.within(0, 1);",
+							"    });",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"Textos_espanol\": [\n        \"Por ejemplo, el nÃºmero de consultas externas de especialistas es de 319 por cada mil derechohabientes en el SP, en comparaciÃ³n con 338 y 620 por cada mil derechohabientes en el IMSS y el ISSSTE, respectivamente. Si bien algunas de estas diferencias pueden reflejar una necesidad desigual (como la poblaciÃ³n ligeramente mayor del ISSSTE), otras no pueden justificarse de esta manera. El nÃºmero de recetas que no pudieron ser surtidas en su totalidad por un farmacÃ©utico debido a la falta de existencias es de 33% dentro del SP en comparaciÃ³n con 14% dentro del IMSS segÃºn los datos de la encuesta (aunque las propias cifras de los institutos de la SS sugieren tasas mÃ¡s altas de recetas surtidas). Ambas cifras se encuentran entre las mÃ¡s altas de la OCDE. El gasto de bolsillo no se ha reducido significativamente en la última década, a pesar de los esfuerzos para lograr la cobertura sanitaria universal a través de la reforma del SP.\",\n        \"Además, Uruguay necesita mejorar la difusión de información sobre las actividades a nivel escolar, incluida la información sobre los presupuestos escolares. Si bien la difusión de informes puede verse como otra carga en el proceso de presentación de informes, los consejos de educación deben considerar el uso de un formato único desarrollado a nivel nacional para garantizar que los padres y votantes sepan cómo funcionan las escuelas en su comunidad y cómo se utilizan los recursos escolares. En particular, sería importante divulgar públicamente los recursos públicos que recibe cada escuela junto con los usos de esos recursos y los resultados educativos en la escuela.\",\n        \"Las áreas útiles para un mayor estudio y acción política incluyen: la disponibilidad rutinaria de datos desglosados ​​por género, la incorporación de enfoques específicos de género dentro de las rutinas anuales normales de presupuestación y la complementación de enfoques dirigidos por ejecutivos con garantía de calidad externa. El uso de dichos datos por parte de la OCDE es sin perjuicio del estado de los Altos del Golán, Jerusalén Este y los asentamientos israelíes en Cisjordania según los términos del derecho internacional. Hoy en día muchas disparidades y desigualdades entre los sexos parecen haberse incrustado, en mayor o menor medida, en la línea base de las políticas públicas y la asignación de recursos públicos.\"\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{baseUrl}}/predict",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"predict"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Train - Wrong body",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 422\", function () {",
+							"  pm.response.to.have.status(422);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"datos\": [\n        {\n        \"Textos_espanol\": \"Text 1\",\n        \"sdg\": 1\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{baseUrl}}/train",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"train"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Train - Wrong data size",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"Textos_espanol\": [\n        \"Texto 1\",\n        \"Texto 2\",\n        \"Texto extra\"\n    ],\n    \"sdg\": [\n        3,\n        3\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{baseUrl}}/train",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"train"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Train - Model metrics",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Accuracy, f1-score, precision, recall, and message fields should exist in the response\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData.accuracy).to.exist.and.to.be.a('number');",
+							"    pm.expect(responseData['f1-score']).to.exist.and.to.be.a('number');",
+							"    pm.expect(responseData.precision).to.exist.and.to.be.a('number');",
+							"    pm.expect(responseData.recall).to.exist.and.to.be.a('number');",
+							"    pm.expect(responseData.message).to.exist.and.to.be.a('string');",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"Textos_espanol\": [\n        \"Por ejemplo, el nÃºmero de consultas externas de especialistas es de 319 por cada mil derechohabientes en el SP, en comparaciÃ³n con 338 y 620 por cada mil derechohabientes en el IMSS y el ISSSTE, respectivamente. Si bien algunas de estas diferencias pueden reflejar una necesidad desigual (como la poblaciÃ³n ligeramente mayor del ISSSTE), otras no pueden justificarse de esta manera. El nÃºmero de recetas que no pudieron ser surtidas en su totalidad por un farmacÃ©utico debido a la falta de existencias es de 33% dentro del SP en comparaciÃ³n con 14% dentro del IMSS segÃºn los datos de la encuesta (aunque las propias cifras de los institutos de la SS sugieren tasas mÃ¡s altas de recetas surtidas). Ambas cifras se encuentran entre las mÃ¡s altas de la OCDE. El gasto de bolsillo no se ha reducido significativamente en la última década, a pesar de los esfuerzos para lograr la cobertura sanitaria universal a través de la reforma del SP.\",\n        \"Por ejemplo, el nÃºmero de consultas externas de especialistas es de 319 por cada mil derechohabientes en el SP, en comparaciÃ³n con 338 y 620 por cada mil derechohabientes en el IMSS y el ISSSTE, respectivamente. Si bien algunas de estas diferencias pueden reflejar una necesidad desigual (como la poblaciÃ³n ligeramente mayor del ISSSTE), otras no pueden justificarse de esta manera. El nÃºmero de recetas que no pudieron ser surtidas en su totalidad por un farmacÃ©utico debido a la falta de existencias es de 33% dentro del SP en comparaciÃ³n con 14% dentro del IMSS segÃºn los datos de la encuesta (aunque las propias cifras de los institutos de la SS sugieren tasas mÃ¡s altas de recetas surtidas). Ambas cifras se encuentran entre las mÃ¡s altas de la OCDE. El gasto de bolsillo no se ha reducido significativamente en la última década, a pesar de los esfuerzos para lograr la cobertura sanitaria universal a través de la reforma del SP.\"\n    ],\n    \"sdg\": [\n        3,\n        3\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{baseUrl}}/train",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"train"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Version must be v1.1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Test to check if the response time is less than 200ms",
+							"pm.test(\"Response status code is 200\", function () {",
+							"  pm.expect(pm.response.code).to.equal(200);",
+							"});",
+							"",
+							"pm.test(\"Response body contains the version number\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData.version).to.exist.and.to.equal('v1.1');",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{baseUrl}}/version",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"version"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Train - New model version 1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Accuracy, f1-score, precision, recall, and message fields should exist in the response\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData.accuracy).to.exist.and.to.be.a('number');",
+							"    pm.expect(responseData['f1-score']).to.exist.and.to.be.a('number');",
+							"    pm.expect(responseData.precision).to.exist.and.to.be.a('number');",
+							"    pm.expect(responseData.recall).to.exist.and.to.be.a('number');",
+							"    pm.expect(responseData.message).to.exist.and.to.be.a('string');",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"Textos_espanol\": [\n        \"Por ejemplo, el nÃºmero de consultas externas de especialistas es de 319 por cada mil derechohabientes en el SP, en comparaciÃ³n con 338 y 620 por cada mil derechohabientes en el IMSS y el ISSSTE, respectivamente. Si bien algunas de estas diferencias pueden reflejar una necesidad desigual (como la poblaciÃ³n ligeramente mayor del ISSSTE), otras no pueden justificarse de esta manera. El nÃºmero de recetas que no pudieron ser surtidas en su totalidad por un farmacÃ©utico debido a la falta de existencias es de 33% dentro del SP en comparaciÃ³n con 14% dentro del IMSS segÃºn los datos de la encuesta (aunque las propias cifras de los institutos de la SS sugieren tasas mÃ¡s altas de recetas surtidas). Ambas cifras se encuentran entre las mÃ¡s altas de la OCDE. El gasto de bolsillo no se ha reducido significativamente en la última década, a pesar de los esfuerzos para lograr la cobertura sanitaria universal a través de la reforma del SP.\",\n        \"Por ejemplo, el nÃºmero de consultas externas de especialistas es de 319 por cada mil derechohabientes en el SP, en comparaciÃ³n con 338 y 620 por cada mil derechohabientes en el IMSS y el ISSSTE, respectivamente. Si bien algunas de estas diferencias pueden reflejar una necesidad desigual (como la poblaciÃ³n ligeramente mayor del ISSSTE), otras no pueden justificarse de esta manera. El nÃºmero de recetas que no pudieron ser surtidas en su totalidad por un farmacÃ©utico debido a la falta de existencias es de 33% dentro del SP en comparaciÃ³n con 14% dentro del IMSS segÃºn los datos de la encuesta (aunque las propias cifras de los institutos de la SS sugieren tasas mÃ¡s altas de recetas surtidas). Ambas cifras se encuentran entre las mÃ¡s altas de la OCDE. El gasto de bolsillo no se ha reducido significativamente en la última década, a pesar de los esfuerzos para lograr la cobertura sanitaria universal a través de la reforma del SP.\"\n    ],\n    \"sdg\": [\n        3,\n        3\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{baseUrl}}/train",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"train"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Train - New model version 2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Accuracy, f1-score, precision, recall, and message fields should exist in the response\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData.accuracy).to.exist.and.to.be.a('number');",
+							"    pm.expect(responseData['f1-score']).to.exist.and.to.be.a('number');",
+							"    pm.expect(responseData.precision).to.exist.and.to.be.a('number');",
+							"    pm.expect(responseData.recall).to.exist.and.to.be.a('number');",
+							"    pm.expect(responseData.message).to.exist.and.to.be.a('string');",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"Textos_espanol\": [\n        \"Por ejemplo, el nÃºmero de consultas externas de especialistas es de 319 por cada mil derechohabientes en el SP, en comparaciÃ³n con 338 y 620 por cada mil derechohabientes en el IMSS y el ISSSTE, respectivamente. Si bien algunas de estas diferencias pueden reflejar una necesidad desigual (como la poblaciÃ³n ligeramente mayor del ISSSTE), otras no pueden justificarse de esta manera. El nÃºmero de recetas que no pudieron ser surtidas en su totalidad por un farmacÃ©utico debido a la falta de existencias es de 33% dentro del SP en comparaciÃ³n con 14% dentro del IMSS segÃºn los datos de la encuesta (aunque las propias cifras de los institutos de la SS sugieren tasas mÃ¡s altas de recetas surtidas). Ambas cifras se encuentran entre las mÃ¡s altas de la OCDE. El gasto de bolsillo no se ha reducido significativamente en la última década, a pesar de los esfuerzos para lograr la cobertura sanitaria universal a través de la reforma del SP.\",\n        \"Por ejemplo, el nÃºmero de consultas externas de especialistas es de 319 por cada mil derechohabientes en el SP, en comparaciÃ³n con 338 y 620 por cada mil derechohabientes en el IMSS y el ISSSTE, respectivamente. Si bien algunas de estas diferencias pueden reflejar una necesidad desigual (como la poblaciÃ³n ligeramente mayor del ISSSTE), otras no pueden justificarse de esta manera. El nÃºmero de recetas que no pudieron ser surtidas en su totalidad por un farmacÃ©utico debido a la falta de existencias es de 33% dentro del SP en comparaciÃ³n con 14% dentro del IMSS segÃºn los datos de la encuesta (aunque las propias cifras de los institutos de la SS sugieren tasas mÃ¡s altas de recetas surtidas). Ambas cifras se encuentran entre las mÃ¡s altas de la OCDE. El gasto de bolsillo no se ha reducido significativamente en la última década, a pesar de los esfuerzos para lograr la cobertura sanitaria universal a través de la reforma del SP.\"\n    ],\n    \"sdg\": [\n        3,\n        3\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{baseUrl}}/train",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"train"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Version must be v1.3",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Test to check if the response time is less than 200ms",
+							"pm.test(\"Response status code is 200\", function () {",
+							"  pm.expect(pm.response.code).to.equal(200);",
+							"});",
+							"",
+							"pm.test(\"Response body contains the version number\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData.version).to.exist.and.to.equal('v1.3');",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{baseUrl}}/version",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"version"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Rollback to third version",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"  pm.expect(pm.response.code).to.equal(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Content-Type is application/json\", function () {",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response has the required fields\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.have.property('message');",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://{{baseUrl}}/rollback",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"rollback"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Version must be v1.2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Test to check if the response time is less than 200ms",
+							"pm.test(\"Response status code is 200\", function () {",
+							"  pm.expect(pm.response.code).to.equal(200);",
+							"});",
+							"",
+							"pm.test(\"Response body contains the version number\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData.version).to.exist.and.to.equal('v1.2');",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{baseUrl}}/version",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"version"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "localhost:8080",
+			"type": "string"
+		}
+	]
+}
