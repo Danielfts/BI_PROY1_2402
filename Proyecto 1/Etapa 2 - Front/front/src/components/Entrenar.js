@@ -46,14 +46,14 @@ const Entrenar = () => {
             type="text" 
             placeholder="Inserta tu set de datos" 
             className="mb-3" 
-            style={{ borderRadius: '20px', border: '1px solid #ddd', padding: '10px' }}
+            style={{ borderRadius: '20px', border: '1px solid #ddd', padding: '10px', width: '100%' }}
           />
           <Button 
             variant="info" 
             onClick={handleTrain} 
-            style={{ borderRadius: '20px', marginLeft: '10px', backgroundColor: '#6CC3D5', borderColor: '#6CC3D5' }}
+            style={{ borderRadius: '20px', marginLeft: '10px', backgroundColor: '#6CC3D5', borderColor: '#6CC3D5', height: '40px' }}
           >
-            Entrenar
+            ENTRENAR
           </Button>
         </Col>
       </Row>

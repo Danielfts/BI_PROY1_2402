@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 const Unico = () => {
   const [prediction, setPrediction] = useState(null);
-  const navigate = useNavigate(); // Hook de navegación
+  const navigate = useNavigate();
 
   const handlePredict = () => {
     // Simulación de la predicción
@@ -12,11 +12,11 @@ const Unico = () => {
   };
 
   const goToMultiple = () => {
-    navigate('/multiple'); // Navega a la ruta '/multiple'
+    navigate('/multiple');
   };
 
   const goToEntrenar = () => {
-    navigate('/entrenar'); // Navega a la ruta '/entrenar'
+    navigate('/entrenar');
   };
 
   return (
@@ -26,21 +26,21 @@ const Unico = () => {
           <Button 
             variant="link" 
             className="active" 
-            style={{ color: '#000', textDecoration: 'none', borderBottom: '2px solid orange' }}
+            style={{ color: '#000', textDecoration: 'none', borderBottom: '2px solid #e07b39' }}
           >
             Único
           </Button>
           <Button 
             variant="link" 
             style={{ color: '#666', textDecoration: 'none', marginLeft: '20px' }}
-            onClick={goToMultiple} // Navegar a "Múltiples" al hacer clic
+            onClick={goToMultiple}
           >
             Múltiples
           </Button>
           <Button 
             variant="link" 
             style={{ color: '#666', textDecoration: 'none', marginLeft: '20px' }}
-            onClick={goToEntrenar} // Navegar a "Entrenar" al hacer clic
+            onClick={goToEntrenar}
           >
             Entrenar
           </Button>
@@ -52,12 +52,12 @@ const Unico = () => {
             type="text" 
             placeholder="Inserta tu texto" 
             className="mb-3" 
-            style={{ borderRadius: '20px', border: '1px solid #ddd', padding: '10px' }}
+            style={{ borderRadius: '20px', border: '1px solid #ddd', padding: '10px', width: '100%' }}
           />
           <Button 
             variant="info" 
             onClick={handlePredict} 
-            style={{ borderRadius: '20px', marginLeft: '10px', backgroundColor: '#6CC3D5', borderColor: '#6CC3D5' }}
+            style={{ borderRadius: '20px', marginLeft: '10px', backgroundColor: '#6CC3D5', borderColor: '#6CC3D5', height: '40px' }}
           >
             PREDECIR
           </Button>
@@ -66,7 +66,7 @@ const Unico = () => {
       {prediction !== null && (
         <Row className="mt-4">
           <Col md={12}>
-            <Card className="text-center" style={{ borderRadius: '20px', backgroundColor: '#f5f1e9' }}>
+            <Card className="text-center" style={{ borderRadius: '20px', backgroundColor: '#f5f1e9', padding: '20px' }}>
               <Card.Body>
                 <Card.Title style={{ fontSize: '18px', color: '#666', marginBottom: '10px' }}>
                   Clase
@@ -85,3 +85,4 @@ const Unico = () => {
 };
 
 export default Unico;
+
