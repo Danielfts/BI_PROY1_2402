@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from src.lib.prediction_model import Model
 from src.lib.data_model import ModelPredictionIn, ModelPredictionOut, ModelTrainIn
 
@@ -16,6 +16,8 @@ def predict(body: ModelPredictionIn):
 
 @app.post('/train')
 def train(data: ModelTrainIn):
+    if len(data.Textos_espanol) != len(data.sdg):
+        raise HTTPException(status_code=400, detail='Data and labels must have the same length')
     return model.train(data.Textos_espanol, data.sdg)
 
 @app.get('/version')
