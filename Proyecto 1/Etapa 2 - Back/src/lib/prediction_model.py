@@ -1,7 +1,7 @@
 from joblib import load
 from cloudpickle import dumps
 
-from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
+from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, classification_report
 
 import pandas as pd
 import os
@@ -12,7 +12,6 @@ class Model:
     def __init__(self):
         # Load latest model
         self.models_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), self.ASSETS_DIRNAME)
-        self.models_list = sorted([x for x in os.listdir(self.models_dir) if 'model-' in x], reverse=True)
         self.validation_loaded = False
         self.__load_model()
 
@@ -25,6 +24,7 @@ class Model:
         self.validation_loaded = True
 
     def __load_model(self):
+        self.models_list = sorted([x for x in os.listdir(self.models_dir) if 'model-' in x], reverse=True)
         load_path = os.path.join(os.path.dirname(__file__), self.models_dir, self.models_list[0])
         self.model_version = self.models_list[0].removeprefix('model-').removesuffix('.pkl')
         self.model = load(load_path)
@@ -58,8 +58,6 @@ class Model:
         precision = precision_score(self.y_validation, y_pred, average='weighted')
         recall = recall_score(self.y_validation, y_pred, average='weighted')
 
-        print()
-
         self.save()
 
         return {
@@ -80,11 +78,14 @@ class Model:
         # Save model
         with open(f"{self.models_dir}/model-{new_version}.pkl", 'wb') as f:
             f.write(dumps(self.model))
+        print(f"Model saved as version {new_version}")
+        self.__load_model()
 
     def rollback(self):
         if len(self.models_list) > 1:
             os.remove(os.path.join(self.models_dir, self.models_list[0]))
             self.__load_model()
+        return self.model_version
 
     def reset(self):
         for model in self.models_list[:-1]:
