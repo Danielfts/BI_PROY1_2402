@@ -1,19 +1,17 @@
 import React, { useState } from 'react';
-import { Container, Row, Col, Form, Button, Card, Alert } from 'react-bootstrap';
+import { Container, Row, Col, Form, Button, Card, Table, Alert } from 'react-bootstrap';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom'; 
 
 const Unico = () => {
-  const [inputText, setInputText] = useState(''); // Estado para el texto del input
-  const [prediction, setPrediction] = useState(null);
+  const [inputText, setInputText] = useState(''); // Agregué la declaración para inputText
+  const [predictions, setPredictions] = useState([]); // Estado para almacenar las predicciones
   const [error, setError] = useState(''); // Estado para manejar el error
+  const [loading, setLoading] = useState(false); // Estado para manejar la carga
   const navigate = useNavigate();
 
-
-  const [loading, setLoading] = useState(false); // Estado para manejar la carga
-
   const handlePredict = async () => {
-    if (inputText.trim() === '') {
+    if (inputText.trim() === '') {  // inputText se utiliza aquí
       setError('Por favor, ingrese un texto antes de predecir.');
       return;
     }
@@ -25,15 +23,11 @@ const Unico = () => {
 
     try {
       const response = await axios.post('http://localhost:8080/predict', {
-        Textos_espanol: [inputText]
+        Textos_espanol: [inputText]  // inputText se utiliza aquí
       });
       console.log('Respuesta:'); // Verificar la respuesta
       console.log(response); 
-      if (response.data && response.data.predictions && response.data.predictions.length > 0) {
-        setPrediction(response.data.predictions[0].sdg); // Mostrar la predicción
-      } else {
-        setError('No se obtuvo una predicción válida.');
-      }
+      setPredictions(response.data.predictions); // Actualizar con las predicciones devueltas
     } catch (err) {
       setError('Error al hacer la predicción.');
     } finally {
@@ -42,7 +36,7 @@ const Unico = () => {
   };
 
   const handleInputChange = (event) => {
-    setInputText(event.target.value);
+    setInputText(event.target.value);  // setInputText se utiliza aquí
   };
 
   const goToMultiple = () => {
@@ -109,17 +103,29 @@ const Unico = () => {
           </Col>
         </Row>
       )}
-      {prediction !== null && (
+      {predictions.length > 0 && (
         <Row className="mt-4">
           <Col md={12}>
             <Card className="text-center" style={{ borderRadius: '20px', backgroundColor: '#f5f1e9', padding: '20px' }}>
               <Card.Body>
-                <Card.Title style={{ fontSize: '18px', color: '#666', marginBottom: '10px' }}>
-                  Clase
-                </Card.Title>
-                <h1 style={{ fontSize: '60px', margin: '0', color: '#333' }}>{prediction}</h1>
+                <Table borderless>
+                  <thead>
+                    <tr>
+                      <th style={{ textAlign: 'center', color: '#666' }}>Clase</th>
+                      <th style={{ textAlign: 'center', color: '#666' }}>Probabilidad</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {predictions.map((prediction, index) => (
+                      <tr key={index}>
+                        <td style={{ textAlign: 'center', padding: '10px 0', color: '#333' }}>{prediction.sdg}</td>
+                        <td style={{ textAlign: 'center', padding: '10px 0', color: '#333' }}>{prediction.prob.toFixed(2)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
                 <Card.Text className="text-muted" style={{ marginTop: '10px', fontSize: '14px', color: '#e07b39' }}>
-                  Resultado
+                  Resultados de predicción
                 </Card.Text>
               </Card.Body>
             </Card>
@@ -131,4 +137,3 @@ const Unico = () => {
 };
 
 export default Unico;
-

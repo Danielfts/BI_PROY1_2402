@@ -107,17 +107,25 @@ const Multiple = () => {
             <Card className="text-center" style={{ borderRadius: '20px', backgroundColor: '#f5f1e9' }}>
               <Card.Body>
                 <Table borderless>
+                  <thead>
+                    <tr>
+                      <th style={{ textAlign: 'left', color: '#666' }}>Texto</th>
+                      <th style={{ textAlign: 'center', color: '#666' }}>Clase</th>
+                      <th style={{ textAlign: 'right', color: '#666' }}>Probabilidad</th>
+                    </tr>
+                  </thead>
                   <tbody>
                     {predictions.map((item, index) => (
                       <tr key={index}>
                         <td style={{ textAlign: 'left', padding: '10px 0', color: '#666' }}>{item.texto}</td>
-                        <td style={{ textAlign: 'right', padding: '10px 0', color: '#333' }}>{item.sdg}</td>
+                        <td style={{ textAlign: 'center', padding: '10px 0', color: '#333' }}>{item.sdg}</td>
+                        <td style={{ textAlign: 'right', padding: '10px 0', color: '#333' }}>{item.prob.toFixed(2)}</td> {/* Mostrar la probabilidad con dos decimales */}
                       </tr>
                     ))}
                   </tbody>
                 </Table>
                 <Card.Text className="text-muted" style={{ marginTop: '10px', fontSize: '14px', color: '#e07b39' }}>
-                  Resultado
+                  Resultados de predicción
                 </Card.Text>
               </Card.Body>
             </Card>
