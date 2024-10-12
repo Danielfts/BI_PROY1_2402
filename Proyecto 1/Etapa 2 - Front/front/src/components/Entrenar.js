@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Container, Row, Col, Form, Button, Card, Table, Alert } from 'react-bootstrap';
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 const Entrenar = () => {
@@ -8,21 +9,27 @@ const Entrenar = () => {
   const [error, setError] = useState(''); // Estado para manejar el error
   const navigate = useNavigate();
 
-  const handleTrain = () => {
+  const handleTrain = async () => {
     if (!file) {
       setError('Por favor, sube un archivo CSV antes de entrenar.');
       return;
     }
     setError(''); // Limpiar el error si hay un archivo
 
-    // Simulación de métricas de entrenamiento
-    const simulatedMetrics = {
-      f1Score: 90,
-      recall: 90,
-      precision: 90,
-      accuracy: 90,
-    };
-    setMetrics(simulatedMetrics);
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const response = await axios.post('http://localhost:8080/train', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      setMetrics(response.data); // Actualizar con las métricas devueltas desde el backend
+    } catch (err) {
+      console.error(err);
+      setError('Error al entrenar el modelo. Intenta nuevamente.');
+    }
   };
 
   const handleFileChange = (event) => {
@@ -96,7 +103,7 @@ const Entrenar = () => {
                       <td style={{ textAlign: 'left', color: '#fff', backgroundColor: '#6CC3D5', borderRadius: '10px', padding: '10px' }}>
                         F1-Score
                       </td>
-                      <td style={{ textAlign: 'right', padding: '10px 0', color: '#333' }}>{metrics.f1Score}</td>
+                      <td style={{ textAlign: 'right', padding: '10px 0', color: '#333' }}>{metrics.f1_score}</td>
                     </tr>
                     <tr>
                       <td style={{ textAlign: 'left', color: '#fff', backgroundColor: '#6CC3D5', borderRadius: '10px', padding: '10px' }}>

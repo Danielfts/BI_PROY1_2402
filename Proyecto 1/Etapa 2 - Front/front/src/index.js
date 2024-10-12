@@ -1,12 +1,15 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client'; // Importar createRoot
 import 'bootstrap/dist/css/bootstrap.min.css';
 import App from './App';
 
-ReactDOM.render(
+const container = document.getElementById('root'); // Obtén el contenedor
+const root = createRoot(container); // Crea la raíz
+
+
+root.render(
   <React.StrictMode>
     <App />
-  </React.StrictMode>,
-  document.getElementById('root')
+  </React.StrictMode>
 );
 

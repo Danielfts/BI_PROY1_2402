@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Container, Row, Col, Form, Button, Card, Table, Alert } from 'react-bootstrap';
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 const Multiple = () => {
@@ -8,22 +9,27 @@ const Multiple = () => {
   const [error, setError] = useState(''); // Estado para manejar el error
   const navigate = useNavigate();
 
-  const handlePredict = () => {
+  const handlePredict = async () => {
     if (!file) {
       setError('Por favor, sube un archivo CSV antes de predecir.');
       return;
     }
     setError(''); // Limpiar el error si hay un archivo
 
-    // Simulación de predicciones para varios textos (aquí procesarías el CSV)
-    const simulatedPredictions = [
-      { text: 'Texto No. 1', value: 3 },
-      { text: 'Texto No. 2', value: 4 },
-      { text: 'Texto No. 3', value: 3 },
-      { text: 'Texto No. 4', value: 5 },
-      { text: 'Texto No. 5', value: 5 },
-    ];
-    setPredictions(simulatedPredictions);
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const response = await axios.post('http://localhost:8080/predict/multiple', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      setPredictions(response.data); // Actualizar con las predicciones devueltas
+    } catch (err) {
+      console.error(err);
+      setError('Error al hacer la predicción. Intenta nuevamente.');
+    }
   };
 
   const handleFileChange = (event) => {
@@ -104,8 +110,8 @@ const Multiple = () => {
                   <tbody>
                     {predictions.map((item, index) => (
                       <tr key={index}>
-                        <td style={{ textAlign: 'left', padding: '10px 0', color: '#666' }}>{item.text}</td>
-                        <td style={{ textAlign: 'right', padding: '10px 0', color: '#333' }}>{item.value}</td>
+                        <td style={{ textAlign: 'left', padding: '10px 0', color: '#666' }}>{item.texto}</td>
+                        <td style={{ textAlign: 'right', padding: '10px 0', color: '#333' }}>{item.sdg}</td>
                       </tr>
                     ))}
                   </tbody>

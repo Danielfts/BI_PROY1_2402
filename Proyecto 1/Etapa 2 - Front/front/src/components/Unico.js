@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Container, Row, Col, Form, Button, Card, Alert } from 'react-bootstrap';
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom'; 
 
 const Unico = () => {
@@ -8,14 +9,36 @@ const Unico = () => {
   const [error, setError] = useState(''); // Estado para manejar el error
   const navigate = useNavigate();
 
-  const handlePredict = () => {
+
+  const [loading, setLoading] = useState(false); // Estado para manejar la carga
+
+  const handlePredict = async () => {
     if (inputText.trim() === '') {
       setError('Por favor, ingrese un texto antes de predecir.');
       return;
     }
-    setError(''); // Limpiar el error si hay texto
-    // Simulación de la predicción
-    setPrediction(2);
+
+    console.log('Predecir clicado');  // Verificar si la función se ejecuta
+
+    setError('');
+    setLoading(true); // Bloquear el botón
+
+    try {
+      const response = await axios.post('http://localhost:8080/predict', {
+        Textos_espanol: [inputText]
+      });
+      console.log('Respuesta:'); // Verificar la respuesta
+      console.log(response); 
+      if (response.data && response.data.predictions && response.data.predictions.length > 0) {
+        setPrediction(response.data.predictions[0].sdg); // Mostrar la predicción
+      } else {
+        setError('No se obtuvo una predicción válida.');
+      }
+    } catch (err) {
+      setError('Error al hacer la predicción.');
+    } finally {
+      setLoading(false); // Habilitar el botón de nuevo
+    }
   };
 
   const handleInputChange = (event) => {
@@ -70,9 +93,10 @@ const Unico = () => {
           <Button 
             variant="info" 
             onClick={handlePredict} 
+            disabled={loading} // Deshabilitar el botón mientras se carga
             style={{ borderRadius: '20px', marginLeft: '10px', backgroundColor: '#6CC3D5', borderColor: '#6CC3D5', height: '40px' }}
           >
-            PREDECIR
+            {loading ? 'Cargando...' : 'PREDECIR'}
           </Button>
         </Col>
       </Row>
@@ -107,3 +131,4 @@ const Unico = () => {
 };
 
 export default Unico;
+
