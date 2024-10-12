@@ -40,6 +40,7 @@ def predict_multiple(file: UploadFile = File(...)):
         predictions = model.predict(df['Textos_espanol'].tolist())
         return predictions
     except Exception as e:
+        print(e)
         raise HTTPException(status_code=500, detail=str(e))
     
 @app.post('/train', response_model=ModelTrainOut)

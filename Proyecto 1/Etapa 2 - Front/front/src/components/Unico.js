@@ -119,7 +119,7 @@ const Unico = () => {
                     {predictions.map((prediction, index) => (
                       <tr key={index}>
                         <td style={{ textAlign: 'center', padding: '10px 0', color: '#333' }}>{prediction.sdg}</td>
-                        <td style={{ textAlign: 'center', padding: '10px 0', color: '#333' }}>{prediction.prob.toFixed(2)}</td>
+                        <td style={{ textAlign: 'center', padding: '10px 0', color: '#333' }}>{prediction.prob.toFixed(5)}</td>
                       </tr>
                     ))}
                   </tbody>

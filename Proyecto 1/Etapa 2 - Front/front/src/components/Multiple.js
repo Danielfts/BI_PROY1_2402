@@ -119,7 +119,7 @@ const Multiple = () => {
                       <tr key={index}>
                         <td style={{ textAlign: 'left', padding: '10px 0', color: '#666' }}>{item.texto}</td>
                         <td style={{ textAlign: 'center', padding: '10px 0', color: '#333' }}>{item.sdg}</td>
-                        <td style={{ textAlign: 'right', padding: '10px 0', color: '#333' }}>{item.prob.toFixed(2)}</td> {/* Mostrar la probabilidad con dos decimales */}
+                        <td style={{ textAlign: 'right', padding: '10px 0', color: '#333' }}>{item.prob.toFixed(5)}</td> {/* Mostrar la probabilidad con dos decimales */}
                       </tr>
                     ))}
                   </tbody>
