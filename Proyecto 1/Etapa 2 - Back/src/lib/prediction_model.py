@@ -61,10 +61,10 @@ class Model:
         self.save()
 
         return {
-            'accuracy': accuracy,
-            'f1-score': f1,
-            'precision': precision,
-            'recall': recall,
+            'accuracy': float(accuracy),
+            'f1_score': float(f1),
+            'precision': float(precision),
+            'recall': float(recall),
             'message': 'Model trained successfully'
         }
 

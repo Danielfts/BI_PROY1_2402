@@ -56,6 +56,7 @@ async def train_model(file: UploadFile = File(...)):
         metrics = model.train(df['Textos_espanol'].tolist(), df['sdg'].tolist())
         return metrics
     except Exception as e:
+        model.rollback()
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post('/train')
